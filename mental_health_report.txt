@@ -1,0 +1,14 @@
+
+    Title: Your Mental Health Report from Dr.PANDA
+
+    Time: 14:03
+    Date: 2024-10-02
+
+    Number of user inputs: 3
+
+    Symptoms:
+
+    Symptoms Definitions:
+    
+
+End of Report
