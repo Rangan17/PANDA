@@ -6,7 +6,7 @@ from datetime import datetime
 from os import name
 
 # Google Gemini API configuration
-genai.configure(api_key="AIzaSyAZTD0slE0L73YxTDU3I1rrnA1_o4ViN90")
+genai.configure(api_key=".......................")
 
 # Clickhouse/MyScaleDB connection
 client = clickhouse_connect.get_client(
