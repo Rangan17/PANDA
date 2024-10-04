@@ -1,11 +1,13 @@
 import json
 from datetime import datetime
+from fpdf import FPDF
+import requests
 
 import requests
 
 # Your Gemini API URL and key
-GEMINI_API_URL = "........................................................................................"  # Replace with actual endpoint
-GOOGLE_API_KEY = "........................................"  # Replace with your actual API key
+GEMINI_API_URL = "https://console.cloud.google.com/apis/credentials/key/efcabea3-d612-4777-8fb8-56869da23567?project=gen-lang-client-0350682083" ## # Replace with actual endpoint
+GOOGLE_API_KEY = "AIzaSyAZTD0slE0L73YxTDU3I1rrnA1_o4ViN90"
 
 # List of symptoms to classify from
 SYMPTOMS_LIST = [
@@ -170,7 +172,6 @@ def classify_symptoms_with_gemini(user_input):
         'Content-Type': 'application/json'
     }
 
-    # Send the user input and the predefined symptom list to the Gemini API
     payload = {
         'input_text': user_input,
         'symptoms_list': SYMPTOMS_LIST
@@ -178,7 +179,7 @@ def classify_symptoms_with_gemini(user_input):
 
     try:
         response = requests.post(GEMINI_API_URL, headers=headers, data=json.dumps(payload))
-        
+
         if response.status_code == 200:
             result = response.json()
             classified_symptoms = result.get('symptoms', [])
@@ -190,57 +191,100 @@ def classify_symptoms_with_gemini(user_input):
         print(f"Request failed: {e}")
         return []
 
-def generate_report(user_inputs, symptom_classifications):
+def generate_pdf_report(user_inputs, symptom_classifications):
     """
-    Generate a mental health report based on the user inputs and symptom classifications.
+    Generate a PDF mental health report based on the user inputs and symptom classifications.
     """
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    
+    # Title
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(200, 10, "Your Mental Health Report from Dr.PANDA", ln=True, align='C')
+
     # Get current time and date
     current_time = datetime.now().strftime("%H:%M")
     current_date = datetime.now().strftime("%Y-%m-%d")
 
-    # Initialize variables for report
-    num_user_inputs = len(user_inputs)
-    symptoms = set()  # Use a set to avoid duplicate symptoms
+    # Add Date and Time
+    pdf.set_font("Arial", size=12)
+    pdf.ln(10)
+    pdf.cell(200, 10, f"Time: {current_time}", ln=True)
+    pdf.cell(200, 10, f"Date: {current_date}", ln=True)
 
-    # Collect all symptoms
+    # Number of user inputs
+    num_user_inputs = len(user_inputs)
+    pdf.cell(200, 10, f"Number of user inputs: {num_user_inputs}", ln=True)
+
+    # Collect and display all symptoms
+    symptoms = set()  # Use a set to avoid duplicate symptoms
     for symptom_list in symptom_classifications:
         symptoms.update(symptom_list)
 
-    # Generate the report
-    report = f"""
-    Title: Your Mental Health Report from Dr.PANDA
+    pdf.ln(10)
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(200, 10, "Symptoms:", ln=True)
 
-    Time: {current_time}
-    Date: {current_date}
-
-    Number of user inputs: {num_user_inputs}
-
-    Symptoms: {', '.join(symptoms)}
-
-    Symptoms Definitions:
-    """
+    pdf.set_font("Arial", size=12)
     for symptom in symptoms:
-        report += f"\n- {symptom}: Definition for {symptom}"
+        pdf.cell(200, 10, f"- {symptom}", ln=True)
 
-    report += "\n\nEnd of Report"
+    pdf.ln(10)
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(200, 10, "Symptoms Definitions:", ln=True)
+    pdf.set_font("Arial", size=12)
+    for symptom in symptoms:
+        pdf.cell(200, 10, f"- {symptom}: Definition for {symptom}", ln=True)
 
-    return report
+    # Save PDF
+    pdf_file = "mental_health_report.pdf"
+    pdf.output(pdf_file)
+    print(f"PDF report generated and saved to '{pdf_file}'.")
+
+def chatbot():
+    """
+    A simple chatbot interface that takes user input and analyzes the symptoms.
+    """
+    print("Welcome to Dr.PANDA Mental Health Analysis Chatbot!")
+    print("Please enter your symptoms or type 'exit' to quit.")
+    
+    user_inputs = []
+    symptom_classifications = []
+
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'exit':
+            break
+        user_inputs.append(user_input)
+
+        # Perform symptom classification for the user input
+        classified_symptoms = classify_symptoms_with_gemini(user_input)
+        symptom_classifications.append(classified_symptoms)
+
+    # Generate the PDF report after user exits the chat
+    if user_inputs:
+        generate_pdf_report(user_inputs, symptom_classifications)
+    else:
+        print("No user inputs provided. Exiting.")
 
 # Main execution
-chat_history_file = "chat_history.txt"
-user_inputs = extract_user_inputs(chat_history_file)
+chatbot()
+# # Main execution
+# chat_history_file = "chat_history.txt"
+# user_inputs = extract_user_inputs(chat_history_file)
 
-# Perform symptoms classification for each user input using Gemini API
-symptom_classifications = []
-for user_input in user_inputs:
-    classified_symptoms = classify_symptoms_with_gemini(user_input)
-    symptom_classifications.append(classified_symptoms)
+# # Perform symptoms classification for each user input using Gemini API
+# symptom_classifications = []
+# for user_input in user_inputs:
+#     classified_symptoms = classify_symptoms_with_gemini(user_input)
+#     symptom_classifications.append(classified_symptoms)
 
-# Generate the report
-report = generate_report(user_inputs, symptom_classifications)
+# # Generate the report
+# report = generate_pdf_report(user_inputs, symptom_classifications)
 
-# Save the report to a file
-with open("mental_health_report.txt", "w") as report_file:
-    report_file.write(report)
+# # Save the report to a file
+# with open("mental_health_report.txt", "w") as report_file:
+#     report_file.write(report)
 
-print("Report generated and saved to 'mental_health_report.txt'.")
+# print("Report generated and saved to 'mental_health_report.txt'.")
