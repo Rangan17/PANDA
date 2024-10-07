@@ -6,8 +6,8 @@ import requests
 import requests
 
 # Your Gemini API URL and key
-GEMINI_API_URL = "https://console.cloud.google.com/apis/credentials/key/efcabea3-d612-4777-8fb8-56869da23567?project=gen-lang-client-0350682083" ## # Replace with actual endpoint
-GOOGLE_API_KEY = "AIzaSyAZTD0slE0L73YxTDU3I1rrnA1_o4ViN90"
+GEMINI_API_URL = "............................................................................................................" ## # Replace with actual endpoint
+GOOGLE_API_KEY = "....................................................."
 
 # List of symptoms to classify from
 SYMPTOMS_LIST = [
