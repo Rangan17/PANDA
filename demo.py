@@ -10,10 +10,10 @@ genai.configure(api_key=".......................")
 
 # Clickhouse/MyScaleDB connection
 client = clickhouse_connect.get_client(
-      host='msc-c7939b41.us-east-1.aws.myscale.com',
-      port=443,
-      username='rangans_org_default',
-      password='passwd_xMKZKJUpE4jeUX'
+      host='....................................',
+      port=...,
+      username='...................',
+      password='...................................'
   )
 
 # Function to generate embeddings for a text query
