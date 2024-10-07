@@ -5,7 +5,7 @@ from datetime import datetime
 from fpdf import FPDF
 
 # Google Gemini API configuration
-genai.configure(api_key="AIzaSyAZTD0slE0L73YxTDU3I1rrnA1_o4ViN90")
+genai.configure(api_key=".............................................")
 
 # Predefined set of symptoms
 SYMPTOMS =[
